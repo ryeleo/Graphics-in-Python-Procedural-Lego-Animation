@@ -16,30 +16,22 @@ def get_lego_man_from_current_selection():
     return lego_body
 
 
-def run_end():
+def run_end(drama=1.0):
     lego_body = get_lego_man_from_current_selection()
     if lego_body is '':
         return """Was unable to find a "lego body" in the current selection!"""
     animation_time = 6
-    start_animation_time = mc.currentTime(query=True)
-    end_animation_time = start_animation_time + animation_time
+    end_time = mc.currentTime(query=True) + animation_time
+    current_body_move = mc.getAttr(lego_body + ".translateZ")
+    body_move = 1.2 * drama + current_body_move
+    left_arm = lego_body+"|arm_L"
+    right_arm = lego_body+"|arm_R"
+    right_leg = lego_body+"|hips|leg_R"
+    left_leg = lego_body+"|hips|leg_L"
 
-    # Global Movements: Leaning the body forward and translating it forward
-    mc.select("body")
-    mc.move(0, 0, 1, r=True)
-    mc.setKeyframe(at="translateZ", time=end_animation_time)
-    mc.rotate(0, 0, 0)
-    mc.setKeyframe(at="rotateX", time=end_animation_time)
-
-    # Rotate Legs AND SCALE LEGS
-    # Rotate legA (x) forward 35
-    # Rotate legB (x) backward -35
-    mc.select("leg_R")
-    mc.rotate(0, 0, 0)
-    mc.setKeyframe(at="rotateX", time=end_animation_time)
-    mc.select("leg_L")
-    mc.rotate(0, 0, 0)
-    mc.setKeyframe(at="rotateX", time=end_animation_time)
-    mc.currentTime(end_animation_time)
+    mc.setKeyframe(lego_body, right_leg, left_leg, left_arm, right_arm, v=0, at="rotateX", time=end_time, ott="spline")
+    mc.setKeyframe(lego_body, v=0, at="translateZ", time=end_time, ott="spline")
+    mc.setKeyframe(lego_body, v=0, at="translateY", time=end_time, ott="spline")
+    mc.setKeyframe(lego_body, v=body_move, at="translateZ", time=end_time, itt="spline")
 
 run_end()

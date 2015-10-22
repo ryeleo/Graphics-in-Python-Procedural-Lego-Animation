@@ -21,11 +21,12 @@ def run_begin(right_leg_lead, drama=1.0):
     if lego_body is '':
         return """Was unable to find a "lego body" in the current selection!"""
     # Animation details
-    animation_time = 5
-    body_move = 0.8 * drama
-    body_bounce = 0.4 * drama
+    animation_time = 6
+    current_body_move = mc.getAttr(lego_body + ".translateZ")
+    body_move = 0.8 * drama + current_body_move
+    body_bounce = 0.15 * drama
     body_sway = 8 * drama
-    leg_swing_rotation = 60 * drama
+    leg_swing_rotation = 35 * drama
     if right_leg_lead:
         leg_swing_rotation = -leg_swing_rotation
     start_time = mc.currentTime(query=True)
