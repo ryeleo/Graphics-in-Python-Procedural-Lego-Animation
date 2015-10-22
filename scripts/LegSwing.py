@@ -4,14 +4,19 @@ import maya.cmds as mc
 import re
 
 
-def kick(drama=1.5, animation_t=24):
-    # Figure out the paths to the objects we will be interacting with
+def get_lego_man_from_current_selection():
     selection = mc.ls(selection=True)
     lego_body = ''
     for item in selection:
         match = re.search("(body.*)\|*?", item)
         if match:
             lego_body = match.group(1)
+    return lego_body
+
+
+def kick(drama=1.5, animation_t=24):
+    # Figure out the paths to the objects we will be interacting with
+    lego_body = get_lego_man_from_current_selection()
     if lego_body is '':
         return """Was unable to perform kick since we could not find a "lego body" """
     left_arm = lego_body+"|arm_L"
