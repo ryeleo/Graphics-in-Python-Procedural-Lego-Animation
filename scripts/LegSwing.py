@@ -14,11 +14,11 @@ def get_lego_man_from_current_selection():
     return lego_body
 
 
-def kick(drama=1.5, animation_t=24):
+def kick(drama=1.0, animation_t=24):
     # Figure out the paths to the objects we will be interacting with
     lego_body = get_lego_man_from_current_selection()
     if lego_body is '':
-        return """Was unable to perform kick since we could not find a "lego body" """
+        return """Was unable to find a "lego body" in the current selection!"""
     left_arm = lego_body+"|arm_L"
     right_arm = lego_body+"|arm_R"
     right_leg = lego_body+"|hips|leg_R"

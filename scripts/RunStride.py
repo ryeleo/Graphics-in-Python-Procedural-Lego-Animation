@@ -3,9 +3,23 @@
 # and make it so that I select from a subset of the current selection only.
 # TODO: Pass the currently selected object as a parameter and select Body, and Legs as a subset of that
 import maya.cmds as mc
+import re
+
+
+def get_lego_man_from_current_selection():
+    selection = mc.ls(selection=True)
+    lego_body = ''
+    for item in selection:
+        match = re.search("(body.*)\|*?", item)
+        if match:
+            lego_body = match.group(1)
+    return lego_body
 
 
 def run_stride(right_leg_lead):
+    lego_body = get_lego_man_from_current_selection()
+    if lego_body is '':
+        return """Was unable to find a "lego body" in the current selection!"""
     animation_time = 6
     start_animation_time = mc.currentTime(query=True)
     end_animation_time = start_animation_time + animation_time

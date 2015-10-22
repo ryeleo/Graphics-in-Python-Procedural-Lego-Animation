@@ -1,9 +1,23 @@
 #!/bin/python
 import maya.cmds as mc
 import random
+import re
+
+
+def get_lego_man_from_current_selection():
+    selection = mc.ls(selection=True)
+    lego_body = ''
+    for item in selection:
+        match = re.search("(body.*)\|*?", item)
+        if match:
+            lego_body = match.group(1)
+    return lego_body
 
 
 def object_flight(maya_object, height=30):
+    lego_body = get_lego_man_from_current_selection()
+    if lego_body is '':
+        return """Was unable to find a "lego body" in the current selection!"""
     mc.select(maya_object)
     # Set initial key frame
     current_time = mc.currentTime(query=True)

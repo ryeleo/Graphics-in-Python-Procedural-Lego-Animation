@@ -1,28 +1,41 @@
 #!/bin/python
 import maya.cmds as mc
+import re
 
 
-def raise_arm(maya_object, animation_time=48):
-    mc.select(maya_object)
-    # Get the starting time and declare any "parameters" inline for now
-    starting_time = mc.currentTime(query=True)
-    arm_up_time = 0.2 * animation_time + starting_time
-    arm_hover_time = 0.5 * animation_time + arm_up_time
-    ending_time = animation_time + starting_time
+def get_lego_man_from_current_selection():
+    selection = mc.ls(selection=True)
+    lego_body = ''
+    for item in selection:
+        match = re.search("(body.*)\|*?", item)
+        if match:
+            lego_body = match.group(1)
+    return lego_body
+
+
+def raise_arm(animation_time=32):
+    lego_body = get_lego_man_from_current_selection()
+    if lego_body is '':
+        return """Was unable to find a "lego body" in the current selection!"""
+    right_arm = lego_body+"|arm_R"
+    # Animation Variables
+    arm_up_rotation = -140
+    start_time = mc.currentTime(query=True)
 
     # Set initial Keyframe
-    mc.setKeyframe(at="rotateX", time=starting_time)
+    current_time = start_time
+    mc.setKeyframe(right_arm, at="rotateX", v=0, t=current_time)
 
     # Set keyframe for rotating arm up
-    mc.rotate(-140, 0, 0, r=True)
-    mc.setKeyframe(at="rotateX", time=arm_up_time)
+    current_time = start_time + (0.2*animation_time)
+    mc.setKeyframe(right_arm, at="rotateX", v=arm_up_rotation, t=current_time)
 
     # Set keyframe for holding arm up
-    # mc.rotate(0, 0, 0, r=True)
-    mc.setKeyframe(at="rotateX", time=arm_hover_time)
+    current_time = start_time + (0.5*animation_time)
+    mc.setKeyframe(right_arm, at="rotateX", v=arm_up_rotation, t=current_time)
 
-    # Set keyframe for rotating arm back down
-    mc.rotate(140, 0, 0, r=True)
-    mc.setKeyframe(at="rotateX", time=ending_time)
+    # Set end keyframe
+    current_time = start_time + animation_time
+    mc.setKeyframe(right_arm, at="rotateX", v=0, t=current_time)
 
-raise_arm(mc.ls(selection=True))
+raise_arm()
