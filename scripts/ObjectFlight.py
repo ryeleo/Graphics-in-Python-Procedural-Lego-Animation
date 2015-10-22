@@ -4,55 +4,51 @@ import random
 import re
 
 
-def get_lego_man_from_current_selection():
+def get_ball_from_current_selection():
     selection = mc.ls(selection=True)
-    lego_body = ''
+    ball = ''
     for item in selection:
-        match = re.search("(body.*)\|*?", item)
+        match = re.search("(ball.*)\|*?", item)
         if match:
-            lego_body = match.group(1)
-    return lego_body
+            ball = match.group(1)
+    return ball
 
 
-def object_flight(maya_object, height=30):
-    lego_body = get_lego_man_from_current_selection()
-    if lego_body is '':
-        return """Was unable to find a "lego body" in the current selection!"""
-    mc.select(maya_object)
+def object_flight(height=30):
+    ball = get_ball_from_current_selection()
+    if ball is '':
+        return """Was unable to find a "ball" in the current selection!"""
+    final_slide = height/10
+    ball_rotation = 360*random.randint(height/20, height/10)
+    final_slide_time = height/10
+
     # Set initial key frame
     current_time = mc.currentTime(query=True)
-    mc.setKeyframe(time=current_time)
+    mc.setKeyframe(ball, at="translateZ", t=current_time, ott="linear")
+    mc.setKeyframe(ball, at="translateY", t=current_time, ott="linear")
+    mc.setKeyframe(ball, at="rotate", t=current_time)
 
-    # Set all remaining key frames using while loop
+    # Set all remaining key frames programatically in the below loop
     bounce_height = height
     bounce_time = bounce_height
-    bounce_count = 0
-    ball_distance_traveled = 0
+    bounce_distance = 0
     while bounce_height > 1:
-
         # peak of flight
         current_time += bounce_time/2
-        mc.move(0, bounce_height, bounce_height, r=True)
-        mc.setKeyframe(at="translate", time=current_time, itt="spline", ott="spline")
+        mc.setKeyframe(ball, v=bounce_height, at="translateY", t=current_time, itt="spline", ott="spline")
 
         # touch down to earth
         current_time += bounce_time/2
-        mc.move(0, -bounce_height, bounce_height, r=True)
-        mc.setKeyframe(at="translate", time=current_time, itt="linear", ott="linear")
+        mc.setKeyframe(ball, v=0, at="translateY", t=current_time, itt="linear", ott="linear")
 
-        ball_distance_traveled += bounce_height
-        bounce_count += 1
-        bounce_time *= 0.25
-        bounce_height *= 0.25
+        bounce_distance += bounce_height*3
+        bounce_time *= 0.5
+        bounce_height *= 0.5
 
     # Set final key frame
-    current_time += 6
-    mc.move(0, 0, 3, r=True)
-    mc.rotate(360*random.randint(1, 3*bounce_count),
-              360*random.randint(1, 3*bounce_count),
-              360*random.randint(1, 3*bounce_count),
-              r=True)
-    mc.setKeyframe(at="translate", time=current_time)
-    mc.setKeyframe(at="rotate", time=current_time)
+    current_time += final_slide_time
+    mc.setKeyframe(ball, v=bounce_distance + final_slide, at="translateZ", t=current_time, itt="spline")
+    mc.setKeyframe(ball, v=ball_rotation, at="rotate", t=current_time)
+    mc.currentTime(current_time)
 
-object_flight(mc.ls(selection=True), 45)
+object_flight()

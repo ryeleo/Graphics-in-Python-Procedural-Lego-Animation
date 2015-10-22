@@ -16,43 +16,36 @@ def get_lego_man_from_current_selection():
     return lego_body
 
 
-def run_begin(right_leg_lead):
+def run_begin(right_leg_lead, drama=1.0):
     lego_body = get_lego_man_from_current_selection()
     if lego_body is '':
         return """Was unable to find a "lego body" in the current selection!"""
-    animation_time = 6
-    start_animation_time = mc.currentTime(query=True)
-    end_animation_time = start_animation_time + animation_time
-
-    # Set initial keyframe
-    mc.select("body")
-    mc.setKeyframe(at="rotateX", time=start_animation_time)
-    mc.setKeyframe(at="translateZ", time=start_animation_time)
-    mc.select("leg_R")
-    mc.setKeyframe(at="rotateX", time=start_animation_time)
-    mc.select("leg_L")
-    mc.setKeyframe(at="rotateX", time=start_animation_time)
-
-    # Global Movements: Leaning the body forward and translating it forward
-    mc.select("body")
-    mc.move(0, 0, 1, r=True)
-    mc.setKeyframe(at="translateZ", time=end_animation_time, ott="linear")
-    mc.rotate(8, 0, 0, r=True)
-    mc.setKeyframe(at="rotateX", time=end_animation_time)
-
-    # Rotate Legs AND SCALE LEGS
-    # Rotate legA (x) forward 35
-    # Rotate legB (x) backward -35
-    leg_swing_rotation = 45
+    # Animation details
+    animation_time = 5
+    body_move = 0.8 * drama
+    body_bounce = 0.4 * drama
+    body_sway = 8 * drama
+    leg_swing_rotation = 60 * drama
     if right_leg_lead:
         leg_swing_rotation = -leg_swing_rotation
+    start_time = mc.currentTime(query=True)
+    end_time = mc.currentTime(query=True) + animation_time
+    left_arm = lego_body+"|arm_L"
+    right_arm = lego_body+"|arm_R"
+    right_leg = lego_body+"|hips|leg_R"
+    left_leg = lego_body+"|hips|leg_L"
 
-    mc.select("leg_R")
-    mc.rotate(leg_swing_rotation, 0, 0, r=True)
-    mc.setKeyframe(at="rotateX", time=end_animation_time)
-    mc.select("leg_L")
-    mc.rotate(-leg_swing_rotation, 0, 0, r=True)
-    mc.setKeyframe(at="rotateX", time=end_animation_time)
-    mc.currentTime(end_animation_time)
+    # Set initial keyframe
+    mc.setKeyframe(lego_body, right_leg, left_leg, left_arm, right_arm, at="rotateX", time=start_time, ott="spline")
+    mc.setKeyframe(lego_body, at="translateZ", time=start_time, ott="spline")
+    mc.setKeyframe(lego_body, at="translateY", time=start_time, ott="spline")
+
+    # Set ending keyframe
+    mc.setKeyframe(lego_body, v=body_bounce, at="translateY", time=end_time, ott="spline")
+    mc.setKeyframe(lego_body, v=body_move, at="translateZ", time=end_time, itt="linear", ott="linear")
+    mc.setKeyframe(lego_body, v=body_sway, at="rotateX", time=end_time, itt="linear", ott="linear")
+    mc.setKeyframe(right_leg, left_arm, v=leg_swing_rotation, at="rotateX", time=end_time, itt="linear", ott="linear")
+    mc.setKeyframe(left_leg, right_arm, v=-leg_swing_rotation, at="rotateX", time=end_time, itt="linear", ott="linear")
+    mc.currentTime(end_time)
 
 run_begin(True)
