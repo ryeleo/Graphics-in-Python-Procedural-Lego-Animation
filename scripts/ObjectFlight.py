@@ -18,6 +18,7 @@ def object_flight(height=30):
     ball = get_ball_from_current_selection()
     if ball is '':
         return """Was unable to find a "ball" in the current selection!"""
+    starting_ball_height = mc.getAttr(ball + ".translateY")
     final_slide = height/10
     ball_rotation = 360*random.randint(height/20, height/10)
     final_slide_time = height/10
@@ -39,7 +40,7 @@ def object_flight(height=30):
 
         # touch down to earth
         current_time += bounce_time/2
-        mc.setKeyframe(ball, v=0, at="translateY", t=current_time, itt="linear", ott="linear")
+        mc.setKeyframe(ball, v=starting_ball_height, at="translateY", t=current_time, itt="linear", ott="linear")
 
         bounce_distance += bounce_height*3
         bounce_time *= 0.5
