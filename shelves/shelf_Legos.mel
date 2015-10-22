@@ -1,0 +1,218 @@
+global proc shelf_Legos () {
+    global string $gBuffStr;
+    global string $gBuffStr0;
+    global string $gBuffStr1;
+
+
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Raise Arm" 
+        -enableBackground 0
+        -align "center" 
+        -label "Raise Arm" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "import maya.cmds as mc\n\ndef swing_arm(maya_object, animation_time=48):\n    mc.select(maya_object)\n    # Get the starting time and declare any \"parameters\" inline for now\n    starting_time = mc.currentTime(query=True)\n    arm_up_time = 0.2 * animation_time + starting_time\n    arm_hover_time = 0.5 * animation_time + arm_up_time\n    ending_time = animation_time + starting_time\n\n    # Set initial Keyframe\n    mc.setKeyframe(at=\"rotateX\", time=starting_time)\n\n    # Set keyframe for rotating arm up\n    mc.rotate(-140, 0, 0, r=True)\n    mc.setKeyframe(at=\"rotateX\", time=arm_up_time)\n\n    # Set keyframe for holding arm up\n    # mc.rotate(0, 0, 0, r=True)\n    mc.setKeyframe(at=\"rotateX\", time=arm_hover_time)\n\n    # Set keyframe for rotating arm back down\n    mc.rotate(140, 0, 0, r=True)\n    mc.setKeyframe(at=\"rotateX\", time=ending_time)\n\n\nswing_arm(mc.ls(selection=True))" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Leg Kick" 
+        -enableBackground 0
+        -align "center" 
+        -label "Kick Leg" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "import maya.cmds as mc\n\ndef swing_leg(maya_object, animation_time=24):\n    mc.select(maya_object)\n    # Get the starting time and declare any \"parameters\" inline for now\n    starting_time = mc.currentTime(query=True)\n    swing_back_time = 0.2 * animation_time + starting_time\n    swing_kick_time = 0.15 * animation_time + swing_back_time\n    ending_time = animation_time + starting_time\n\n    # Set initial Keyframe\n    mc.setKeyframe(at=\"rotateX\", time=starting_time)\n\n    # Set keyframe swinging leg back\n    mc.rotate(30, 0, 0, r=True)\n    mc.setKeyframe(at=\"rotateX\", time=swing_back_time)\n\n    # Set keyframe swing leg forward\n    mc.rotate(-110, 0, 0, r=True)\n    mc.setKeyframe(at=\"rotateX\", time=swing_kick_time)\n\n    # Set keyframe leg coming to rest\n    mc.rotate(80, 0, 0, r=True)\n    mc.setKeyframe(at=\"rotateX\", time=ending_time)\n\nswing_leg(mc.ls(selection=True))\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Ball Flight" 
+        -enableBackground 0
+        -align "center" 
+        -label "Ball Flight" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "import maya.cmds as mc\nimport random\ndef tumble_object_flight(maya_object, height=30):\n    mc.select(maya_object)\n    # Set initial key frame\n    current_time = mc.currentTime(query=True)\n    mc.setKeyframe(time=current_time)\n\n    # Set all remaining key frames using while loop\n    bounce_height = height\n    bounce_time = bounce_height\n    bounce_count = 0\n    ball_distance_traveled = 0\n    while bounce_height > 1:\n\n        # peak of flight\n        current_time += bounce_time/2\n        mc.move(0, bounce_height, bounce_height, r=True)\n        mc.setKeyframe(at=\"translate\", time=current_time, itt=\"spline\", ott=\"spline\")\n\n        # touch down to earth\n        current_time += bounce_time/2\n        mc.move(0, -bounce_height, bounce_height, r=True)\n        mc.setKeyframe(at=\"translate\", time=current_time, itt=\"linear\", ott=\"linear\")\n\n        ball_distance_traveled += bounce_height\n        bounce_count += 1\n        bounce_time *= 0.25\n        bounce_height *= 0.25\n\n    # Set final key frame\n    current_time += 6\n    mc.move(0, 0, 3, r=True)\n    mc.rotate(360*random.randint(1, 3*bounce_count),\n              360*random.randint(1, 3*bounce_count),\n              360*random.randint(1, 3*bounce_count),\n              r=True)\n    mc.setKeyframe(at=\"translate\", time=current_time)\n    mc.setKeyframe(at=\"rotate\", time=current_time)\n\ntumble_object_flight(mc.ls(selection=True), 45)\n" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Begin Running: Right Forward" 
+        -enableBackground 0
+        -align "center" 
+        -label "Run Begin Right Forward" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "def begin(right_leg_lead):\n    animation_time = 6\n    start_animation_time = mc.currentTime(query=True)\n    end_animation_time = start_animation_time + animation_time\n\n    # Set initial keyframe\n    mc.select(\"body\")\n    mc.setKeyframe(at=\"rotateX\", time=start_animation_time)\n    mc.setKeyframe(at=\"translateZ\", time=start_animation_time)\n    mc.select(\"leg_R\")\n    mc.setKeyframe(at=\"rotateX\", time=start_animation_time)\n    mc.select(\"leg_L\")\n    mc.setKeyframe(at=\"rotateX\", time=start_animation_time)\n\n    # Global Movements: Leaning the body forward and translating it forward\n    mc.select(\"body\")\n    mc.move(0, 0, 1, r=True)\n    mc.setKeyframe(at=\"translateZ\", time=end_animation_time, ott=\"linear\")\n    mc.rotate(8, 0, 0, r=True)\n    mc.setKeyframe(at=\"rotateX\", time=end_animation_time)\n\n    # Rotate Legs AND SCALE LEGS\n    # Rotate legA (x) forward 35\n    # Rotate legB (x) backward -35\n    leg_swing_rotation = 45\n    if right_leg_lead:\n        leg_swing_rotation = -leg_swing_rotation\n\n    mc.select(\"leg_R\")\n    mc.rotate(leg_swing_rotation, 0, 0, r=True)\n    mc.setKeyframe(at=\"rotateX\", time=end_animation_time)\n    mc.select(\"leg_L\")\n    mc.rotate(-leg_swing_rotation, 0, 0, r=True)\n    mc.setKeyframe(at=\"rotateX\", time=end_animation_time)\n    mc.currentTime(end_animation_time)\n\n\nbegin(True)" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "End Running" 
+        -enableBackground 0
+        -align "center" 
+        -label "End Running" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "def end():\n    animation_time = 6\n    start_animation_time = mc.currentTime(query=True)\n    end_animation_time = start_animation_time + animation_time\n\n    # Global Movements: Leaning the body forward and translating it forward\n    mc.select(\"body\")\n    mc.move(0, 0, 1, r=True)\n    mc.setKeyframe(at=\"translateZ\", time=end_animation_time)\n    mc.rotate(0, 0, 0)\n    mc.setKeyframe(at=\"rotateX\", time=end_animation_time)\n\n    # Rotate Legs AND SCALE LEGS\n    # Rotate legA (x) forward 35\n    # Rotate legB (x) backward -35\n    mc.select(\"leg_R\")\n    mc.rotate(0, 0, 0)\n    mc.setKeyframe(at=\"rotateX\", time=end_animation_time)\n    mc.select(\"leg_L\")\n    mc.rotate(0, 0, 0)\n    mc.setKeyframe(at=\"rotateX\", time=end_animation_time)\n    mc.currentTime(end_animation_time)\n\nend()" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Run Stride Right Forward" 
+        -enableBackground 0
+        -align "center" 
+        -label "Run Stride Right Forward" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "def stride(right_leg_lead):\n    animation_time = 6\n    start_animation_time = mc.currentTime(query=True)\n    end_animation_time = start_animation_time + animation_time\n\n    # Global Movements: translating the body forward\n    mc.select(\"body\")\n    mc.move(0, 0, 4, r=True)\n    mc.setKeyframe(at=\"translateZ\", time=end_animation_time, itt=\"linear\", ott=\"linear\")\n\n    # Rotate Legs AND SCALE LEGS\n    # Rotate legA (x) forward 35\n    # Rotate legB (x) backward -35\n    leg_swing_rotation = -90\n    if right_leg_lead:\n        leg_swing_rotation = -leg_swing_rotation\n\n    mc.select(\"leg_R\")\n    mc.rotate(leg_swing_rotation, 0, 0, r=True)\n    mc.setKeyframe(at=\"rotateX\", time=end_animation_time)\n    mc.select(\"leg_L\")\n    mc.rotate(-leg_swing_rotation, 0, 0, r=True)\n    mc.setKeyframe(at=\"rotateX\", time=end_animation_time)\n    mc.currentTime(end_animation_time)\n\n\nstride(True)" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
+        -annotation "Run Stride Left Forward" 
+        -enableBackground 0
+        -align "center" 
+        -label "Run Stride Left Forward" 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "commandButton.png" 
+        -image1 "commandButton.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "def stride(right_leg_lead):\n    animation_time = 6\n    start_animation_time = mc.currentTime(query=True)\n    end_animation_time = start_animation_time + animation_time\n\n    # Global Movements: translating the body forward\n    mc.select(\"body\")\n    mc.move(0, 0, 4, r=True)\n    mc.setKeyframe(at=\"translateZ\", time=end_animation_time, itt=\"linear\", ott=\"linear\")\n\n    # Rotate Legs AND SCALE LEGS\n    # Rotate legA (x) forward 35\n    # Rotate legB (x) backward -35\n    leg_swing_rotation = -90\n    if right_leg_lead:\n        leg_swing_rotation = -leg_swing_rotation\n\n    mc.select(\"leg_R\")\n    mc.rotate(leg_swing_rotation, 0, 0, r=True)\n    mc.setKeyframe(at=\"rotateX\", time=end_animation_time)\n    mc.select(\"leg_L\")\n    mc.rotate(-leg_swing_rotation, 0, 0, r=True)\n    mc.setKeyframe(at=\"rotateX\", time=end_animation_time)\n    mc.currentTime(end_animation_time)\n\n\nstride(False)" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+
+} 
