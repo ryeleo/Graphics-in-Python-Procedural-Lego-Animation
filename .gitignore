@@ -1,0 +1,13 @@
+.idea/
+assets/
+autosave/
+cache/
+clips/
+data/
+images/
+movies/
+renderData/
+sound/
+sourceimages/
+workspace.mel
+*.pdf
